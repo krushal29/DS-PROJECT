@@ -4,6 +4,32 @@
 //                   4>Dermatology
 #include <iostream>
 using namespace std;
+struct node_ {
+    int data;
+    struct node_ *prev;
+    struct node_ *next;
+};
+
+struct node_ *head = NULL, *tail = NULL;
+
+void cardio_normal() {
+    int x;
+    struct node_ *newnode = (struct node_ *)malloc(sizeof(struct node_));
+    cout<<endl<<"ENTER ID: ";
+    cin>>x;
+    newnode->data = x; 
+    newnode->prev = NULL;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        head = tail = newnode;
+    } else {
+        tail->next = newnode;
+        newnode->prev = tail;
+        tail = newnode;
+    }
+    cout << "PATIENT APPOINTED AS A NORMAL CASE";
+}
 
 struct node
 {
@@ -42,10 +68,7 @@ struct node *cardio_emergency()
     return start;
 }
 
-void cardio_normal()
-{     
-         // FOR NITISH
-}
+
 
 void cardio()
 {
