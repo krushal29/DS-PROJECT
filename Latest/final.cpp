@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits> // For numeric_limits to clear the input buffer
+#include<bits/stdc++.h>
 
 using namespace std;
 #define size1 100
