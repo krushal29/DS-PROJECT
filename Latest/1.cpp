@@ -113,19 +113,20 @@ BSTNode *searchBST(BSTNode *root, int P_id)
     return searchBST(root->right, P_id);
 }
 
-
-void displayBST(BSTNode *root) {
-    if (root == NULL) return;
+void displayBST(BSTNode *root)
+{
+    if (root == NULL)
+        return;
 
     displayBST(root->left); // Visit left subtree
 
     // Print patient details
-    cout << YELLOW << "ID: " << root->patient.P_id 
-         << ", Name: " << root->patient.P_name 
-         << ", Age: " << root->patient.P_age 
-         << ", Gender: " << root->patient.p_gender 
-         << ", Department: " << root->patient.department 
-         << ", Time: " << root->patient.time 
+    cout << YELLOW << "ID: " << root->patient.P_id
+         << ", Name: " << root->patient.P_name
+         << ", Age: " << root->patient.P_age
+         << ", Gender: " << root->patient.p_gender
+         << ", Department: " << root->patient.department
+         << ", Time: " << root->patient.time
          << RESET_TEXT << endl;
 
     displayBST(root->right); // Visit right subtree
@@ -238,10 +239,6 @@ void department_handler(int patientID, struct node_ *&head, struct node_ *&tail,
     }
 }
 
-
-
-
-
 // Cardiology department handling
 void cardio(int patientID)
 {
@@ -270,6 +267,80 @@ void derma(int patientID)
     department_handler(patientID, head_derma, tail_derma, start_derma);
 }
 
+void displayDepartmentPatients(BSTNode *root, const string &department)
+{
+    if (root == NULL)
+        return;
+
+    // Recursively traverse the left subtree
+    displayDepartmentPatients(root->left, department);
+
+    // Check if the patient's department matches
+    if (root->patient.department == department)
+    {
+        cout << YELLOW << "ID: " << root->patient.P_id
+             << ", Name: " << root->patient.P_name
+             << ", Age: " << root->patient.P_age
+             << ", Gender: " << root->patient.p_gender
+             << ", Department: " << root->patient.department
+             << ", Time: " << root->patient.time
+             << RESET_TEXT << endl;
+    }
+}
+
+// Helper function to find the minimum value node in the right subtree
+BSTNode *findMin(BSTNode *node)
+{
+    while (node->left != NULL)
+        node = node->left;
+    return node;
+}
+
+// Function to delete a patient from the BST using their ID
+BSTNode *deleteFromBST(BSTNode *root, int P_id)
+{
+    // Base case: if the tree is empty
+    if (root == NULL)
+        return root;
+
+    // If the ID to be deleted is smaller, recur down the left subtree
+    if (P_id < root->patient.P_id)
+        root->left = deleteFromBST(root->left, P_id);
+
+    // If the ID to be deleted is greater, recur down the right subtree
+    else if (P_id > root->patient.P_id)
+        root->right = deleteFromBST(root->right, P_id);
+
+    // If the ID is found, delete this node
+    else
+    {
+        // Node with only one child or no child
+        if (root->left == NULL)
+        {
+            BSTNode *temp = root->right;
+            delete root;
+            return temp;
+        }
+        else if (root->right == NULL)
+        {
+            BSTNode *temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        // Node with two children: Get the inorder successor (smallest in the right subtree)
+        BSTNode *temp = findMin(root->right);
+
+        // Copy the inorder successor's content to this node
+        root->patient = temp->patient;
+
+        // Delete the inorder successor
+        root->right = deleteFromBST(root->right, temp->patient.P_id);
+    }
+
+    return root;
+}
+
 int main()
 {
     Details d[100]; // Size of details array
@@ -289,7 +360,7 @@ int main()
     while (true)
     {
         // Ask the user if they want to enter details or search history
-        int main_choice = get_valid_integer("Enter 1 to search for a patient's history \nEnter 2 to enter new patient details\n Enter 3 for display all detail: ");
+        int main_choice = get_valid_integer("Enter 1 to search for a patient's history \nEnter 2 to enter new patient details\nEnter 3 Delete patient\nEnter 4 for display all detail: ");
 
         if (main_choice == 1) // Search for patient history
         {
@@ -356,9 +427,23 @@ int main()
 
             i++;
         }
-        else if(main_choice==3){
+        else if (main_choice == 3)
+        {
+            int delete_id = get_valid_integer("Enter Patient ID to delete: ");
+           root= deleteFromBST(root, delete_id);
+            cout << GREEN << "Patient with ID " << delete_id << " has been deleted." << RESET_TEXT << endl;
+        }
+        else if (main_choice == 4)
+        {
             displayBST(root);
         }
+
+        // nisarg can you change it where we will put this condition
+        //  else if (main_choice == 5)
+        //  {
+        //      displayDepartmentPatients(root, "Cardiology");
+        //  }
+
         else
         {
             cout << RED << "Invalid choice. Please try again." << RESET_TEXT << endl;
