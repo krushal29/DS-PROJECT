@@ -3,10 +3,18 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits> // For numeric_limits to clear the input buffer
-#include<bits/stdc++.h>
+
 
 using namespace std;
-#define size1 100
+
+// Define color codes
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+#define RESET_TEXT "\033[0m"
 
 // Structure for storing patient details
 struct Details
@@ -15,6 +23,7 @@ struct Details
     int P_age;
     string p_gender;
     int P_id;
+    string department; // NEW FIELD to store department name
     string time;
 };
 
@@ -124,7 +133,7 @@ int get_valid_integer(const string &prompt)
     int value;
     while (true)
     {
-        cout << prompt;
+        cout << BLUE << prompt << RESET_TEXT; // Changed to BLUE
         cin >> value;
 
         // Check if the input failed (non-numeric input)
@@ -132,7 +141,7 @@ int get_valid_integer(const string &prompt)
         {
             cin.clear(); // Clear the error flag
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
-            cout << "Invalid input, please enter a number." << endl;
+            cout << RED << "Invalid input, please enter a number." << RESET_TEXT << endl;
         }
         else
         {
@@ -160,7 +169,7 @@ void normal_case(struct node_ *&head, struct node_ *&tail, int patientID)
         newnode->prev = tail;
         tail = newnode;
     }
-    cout << "PATIENT APPOINTED AS A NORMAL CASE" << endl;
+    cout << GREEN << "PATIENT APPOINTED AS A NORMAL CASE" << RESET_TEXT << endl; // Changed to GREEN
 }
 
 // Function to handle emergency cases in any department
@@ -178,7 +187,7 @@ struct node *emergency_case(struct node *start, int patientID)
     {
         ptr->next = start;
         start = ptr;
-        cout << "PATIENT-" << patientID << " IS APPOINTED AS AN EMERGENCY CASE" << endl;
+        cout << MAGENTA << "PATIENT-" << patientID << " IS APPOINTED AS AN EMERGENCY CASE" << RESET_TEXT << endl; // Changed to MAGENTA
     }
     else
     {
@@ -207,52 +216,52 @@ void department_handler(int patientID, struct node_ *&head, struct node_ *&tail,
         break;
 
     default:
-        cout << "EXITING THE DEPARTMENT" << endl;
+        cout << RED << "EXITING THE DEPARTMENT" << RESET_TEXT << endl;
     }
 }
 
 // Cardiology department handling
 void cardio(int patientID)
 {
-    cout << "                                WELCOME TO THE CARDIOLOGY DEPARTMENT." << endl;
+    cout << GREEN << "                                WELCOME TO THE CARDIOLOGY DEPARTMENT." << RESET_TEXT << endl; // Changed to GREEN
     department_handler(patientID, head_cardio, tail_cardio, start_cardio);
 }
 
 // Neurology department handling
 void neuro(int patientID)
 {
-    cout << "                                WELCOME TO THE NEUROLOGY DEPARTMENT." << endl;
+    cout << GREEN << "                                WELCOME TO THE NEUROLOGY DEPARTMENT." << RESET_TEXT << endl; // Changed to GREEN
     department_handler(patientID, head_neuro, tail_neuro, start_neuro);
 }
 
 // Orthopedics department handling
 void ortho(int patientID)
 {
-    cout << "                                WELCOME TO THE ORTHOPEDICS DEPARTMENT." << endl;
+    cout << GREEN << "                                WELCOME TO THE ORTHOPEDICS DEPARTMENT." << RESET_TEXT << endl; // Changed to GREEN
     department_handler(patientID, head_ortho, tail_ortho, start_ortho);
 }
 
 // Dermatology department handling
 void derma(int patientID)
 {
-    cout << "                                WELCOME TO THE DERMATOLOGY DEPARTMENT." << endl;
+    cout << GREEN << "                                WELCOME TO THE DERMATOLOGY DEPARTMENT." << RESET_TEXT << endl; // Changed to GREEN
     department_handler(patientID, head_derma, tail_derma, start_derma);
 }
 
 int main()
 {
-    Details d[size1];
+    Details d[100]; // Size of details array
     char ch;
     srand(time(0));
     set<int> generatedNumbers;
-    
+
     BSTNode* root = NULL;  // Initialize the root of the BST
 
-    cout << "                      |------------------------------------------------|\n";
+    cout << BLUE << "                      |------------------------------------------------|\n";
     cout << "                      |                                                |\n";
     cout << "                      | Welcome to Enhanced Hospital Management System |\n";
     cout << "                      |                                                |\n";
-    cout << "                      |------------------------------------------------|\n\n\n";
+    cout << "                      |------------------------------------------------|\n\n\n" << RESET_TEXT;
 
     while (true)
     {
@@ -265,23 +274,23 @@ int main()
             BSTNode* result = searchBST(root, search_id);
             if (result != NULL)
             {
-                cout << "Patient Found!" << endl;
-                cout << "ID: " << result->patient.P_id << " | Name: " << result->patient.P_name << " | Age: " << result->patient.P_age
-                     << " | Gender: " << result->patient.p_gender << " | Time: " << result->patient.time << endl;
+                cout << YELLOW << "Patient Found!" << RESET_TEXT << endl; // Changed to YELLOW
+                cout << YELLOW << "ID: " << result->patient.P_id << " | Name: " << result->patient.P_name << " | Age: " << result->patient.P_age
+                     << " | Gender: " << result->patient.p_gender << " | Department: " << result->patient.department
+                     << " | Time: " << result->patient.time << RESET_TEXT << endl;  // NEW: Department displayed
             }
             else
             {
-                cout << "Patient with ID " << search_id << " not found." << endl;
+                cout << RED << "Patient with ID " << search_id << " not found." << RESET_TEXT << endl;
             }
         }
         else if (main_choice == 2) // Enter new patient details
         {
             static int i = 0;
-            cout << "Enter patient Name: ";
-            cin.ignore(); // Clears the buffer before taking name input
+            cout << BLUE << "Enter patient Name: " << RESET_TEXT; // Changed to BLUE
             getline(cin, d[i].P_name); // Use getline to allow full names with spaces
             d[i].P_age = get_valid_integer("Enter patient age: ");
-            cout << "Enter patient Gender: ";
+            cout << BLUE << "Enter patient Gender: " << RESET_TEXT; // Changed to BLUE
             cin >> d[i].p_gender;
 
             // Generate a unique ID for the patient
@@ -290,10 +299,7 @@ int main()
             d[i].time = ctime(&currentTime);
 
             // Output the patient ID
-            cout << "Patient ID: " << d[i].P_id << " assigned successfully!" << endl;
-
-            // Insert patient details into the BST
-            root = insertIntoBST(root, d[i]);
+            cout << GREEN << "Patient ID: " << RESET_TEXT << d[i].P_id << GREEN << " assigned successfully!" << RESET_TEXT << endl;
 
             // Use get_valid_integer for department choice
             int dept_choice = get_valid_integer("Choose Department:\n1. Cardiology\n2. Neurology\n3. Orthopedics\n4. Dermatology\n");
@@ -302,29 +308,36 @@ int main()
             {
             case 1:
                 cardio(d[i].P_id);
+                d[i].department = "Cardiology";  // Store department
                 break;
             case 2:
                 neuro(d[i].P_id);
+                d[i].department = "Neurology";  // Store department
                 break;
             case 3:
                 ortho(d[i].P_id);
+                d[i].department = "Orthopedics";  // Store department
                 break;
             case 4:
                 derma(d[i].P_id);
+                d[i].department = "Dermatology";  // Store department
                 break;
             default:
-                cout << "Invalid Department Choice!" << endl;
+                cout << RED << "Invalid Department Choice!" << RESET_TEXT << endl;
             }
+
+            // Insert patient details into the BST
+            root = insertIntoBST(root, d[i]);
 
             i++;
         }
         else
         {
-            cout << "Invalid choice. Please try again." << endl;
+            cout << RED << "Invalid choice. Please try again." << RESET_TEXT << endl;
         }
 
         // Ask if the user wants to continue
-        cout << "Do you want to continue? (y/n): ";
+        cout << BLUE << "Do you want to continue? (y/n): " << RESET_TEXT; // Changed to BLUE
         cin >> ch;
         if (ch == 'n' || ch == 'N')
             break;
