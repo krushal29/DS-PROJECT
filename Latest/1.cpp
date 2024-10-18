@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <limits> // For numeric_limits to clear the input buffer
-
+#include <fstream>
 
 using namespace std;
 
@@ -64,23 +64,23 @@ struct node *start_ortho = NULL;
 struct node *start_derma = NULL;
 
 // Function to create a new BST node
-BSTNode* createBSTNode(Details d)
+BSTNode *createBSTNode(Details d)
 {
-    BSTNode* newNode = new BSTNode();
+    BSTNode *newNode = new BSTNode();
     newNode->patient = d;
     newNode->left = newNode->right = NULL;
     return newNode;
 }
 
 // Function to insert patient details into BST
-BSTNode* insertIntoBST(BSTNode* root, Details d)
+BSTNode *insertIntoBST(BSTNode *root, Details d)
 {
     // Base case: if the tree is empty, create a new node
     if (root == NULL)
     {
         return createBSTNode(d);
     }
-    
+
     // Otherwise, recur down the tree
     if (d.P_id < root->patient.P_id)
     {
@@ -90,27 +90,45 @@ BSTNode* insertIntoBST(BSTNode* root, Details d)
     {
         root->right = insertIntoBST(root->right, d);
     }
-    
+
     return root;
 }
 
 // Function to search for patient by ID in the BST
-BSTNode* searchBST(BSTNode* root, int P_id)
+BSTNode *searchBST(BSTNode *root, int P_id)
 {
     // Base case: root is null or the ID matches
     if (root == NULL || root->patient.P_id == P_id)
     {
         return root;
     }
-    
+
     // ID is smaller than root's ID
     if (P_id < root->patient.P_id)
     {
         return searchBST(root->left, P_id);
     }
-    
+
     // ID is larger than root's ID
     return searchBST(root->right, P_id);
+}
+
+
+void displayBST(BSTNode *root) {
+    if (root == NULL) return;
+
+    displayBST(root->left); // Visit left subtree
+
+    // Print patient details
+    cout << YELLOW << "ID: " << root->patient.P_id 
+         << ", Name: " << root->patient.P_name 
+         << ", Age: " << root->patient.P_age 
+         << ", Gender: " << root->patient.p_gender 
+         << ", Department: " << root->patient.department 
+         << ", Time: " << root->patient.time 
+         << RESET_TEXT << endl;
+
+    displayBST(root->right); // Visit right subtree
 }
 
 // Generate a unique ID for each patient
@@ -139,14 +157,14 @@ int get_valid_integer(const string &prompt)
         // Check if the input failed (non-numeric input)
         if (cin.fail())
         {
-            cin.clear(); // Clear the error flag
+            cin.clear();                                         // Clear the error flag
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the invalid input
             cout << RED << "Invalid input, please enter a number." << RESET_TEXT << endl;
         }
         else
         {
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the buffer after valid input
-            return value; // Input is valid, return the integer
+            return value;                                        // Input is valid, return the integer
         }
     }
 }
@@ -220,6 +238,10 @@ void department_handler(int patientID, struct node_ *&head, struct node_ *&tail,
     }
 }
 
+
+
+
+
 // Cardiology department handling
 void cardio(int patientID)
 {
@@ -255,29 +277,32 @@ int main()
     srand(time(0));
     set<int> generatedNumbers;
 
-    BSTNode* root = NULL;  // Initialize the root of the BST
+    BSTNode *root = NULL; // Initialize the root of the BST
 
     cout << BLUE << "                      |------------------------------------------------|\n";
     cout << "                      |                                                |\n";
     cout << "                      | Welcome to Enhanced Hospital Management System |\n";
     cout << "                      |                                                |\n";
-    cout << "                      |------------------------------------------------|\n\n\n" << RESET_TEXT;
+    cout << "                      |------------------------------------------------|\n\n\n"
+         << RESET_TEXT;
 
     while (true)
     {
         // Ask the user if they want to enter details or search history
-        int main_choice = get_valid_integer("Enter 1 to search for a patient's history \nEnter 2 to enter new patient details: ");
-        
+        int main_choice = get_valid_integer("Enter 1 to search for a patient's history \nEnter 2 to enter new patient details\n Enter 3 for display all detail: ");
+
         if (main_choice == 1) // Search for patient history
         {
             int search_id = get_valid_integer("Enter Patient ID to search for patient history: ");
-            BSTNode* result = searchBST(root, search_id);
+            BSTNode *result = searchBST(root, search_id);
             if (result != NULL)
             {
+                ofstream my_file("data.txt");
                 cout << YELLOW << "Patient Found!" << RESET_TEXT << endl; // Changed to YELLOW
                 cout << YELLOW << "ID: " << result->patient.P_id << " | Name: " << result->patient.P_name << " | Age: " << result->patient.P_age
                      << " | Gender: " << result->patient.p_gender << " | Department: " << result->patient.department
-                     << " | Time: " << result->patient.time << RESET_TEXT << endl;  // NEW: Department displayed
+                     << " | Time: " << result->patient.time << RESET_TEXT << endl; // NEW: Department displayed
+                my_file.close();
             }
             else
             {
@@ -288,7 +313,7 @@ int main()
         {
             static int i = 0;
             cout << BLUE << "Enter patient Name: " << RESET_TEXT; // Changed to BLUE
-            getline(cin, d[i].P_name); // Use getline to allow full names with spaces
+            getline(cin, d[i].P_name);                            // Use getline to allow full names with spaces
             d[i].P_age = get_valid_integer("Enter patient age: ");
             cout << BLUE << "Enter patient Gender: " << RESET_TEXT; // Changed to BLUE
             cin >> d[i].p_gender;
@@ -308,19 +333,19 @@ int main()
             {
             case 1:
                 cardio(d[i].P_id);
-                d[i].department = "Cardiology";  // Store department
+                d[i].department = "Cardiology"; // Store department
                 break;
             case 2:
                 neuro(d[i].P_id);
-                d[i].department = "Neurology";  // Store department
+                d[i].department = "Neurology"; // Store department
                 break;
             case 3:
                 ortho(d[i].P_id);
-                d[i].department = "Orthopedics";  // Store department
+                d[i].department = "Orthopedics"; // Store department
                 break;
             case 4:
                 derma(d[i].P_id);
-                d[i].department = "Dermatology";  // Store department
+                d[i].department = "Dermatology"; // Store department
                 break;
             default:
                 cout << RED << "Invalid Department Choice!" << RESET_TEXT << endl;
@@ -330,6 +355,9 @@ int main()
             root = insertIntoBST(root, d[i]);
 
             i++;
+        }
+        else if(main_choice==3){
+            displayBST(root);
         }
         else
         {
