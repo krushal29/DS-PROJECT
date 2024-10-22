@@ -7,7 +7,7 @@
 using namespace std;
 
 // Define color codes
-#define BRIGHT_GREEN "\033[92m" 
+#define BRIGHT_GREEN "\033[92m"
 #define RED "\033[31m"
 #define GREEN "\033[32m"
 // #define BRIGHT_GREEN "\033[31m"
@@ -80,6 +80,29 @@ BSTNode *searchBST(BSTNode *root, int P_id)
     return searchBST(root->right, P_id);
 }
 
+// use inorder
+void searchByCaseType(BSTNode *root, const string &case_type)
+{
+    if (root == NULL)
+        return;
+
+    searchByCaseType(root->left, case_type);
+
+    if (root->patient.case_type == case_type)
+    {
+        cout << YELLOW
+             << "Patient ID: " << root->patient.P_id << " || "
+             << "Name: " << root->patient.P_name << " || "
+             << "Age: " << root->patient.P_age << " || "
+             << "Gender: " << root->patient.p_gender << " || "
+             << "Department: " << root->patient.department << " || "
+             << "Case Type: " << root->patient.case_type << " || "
+             << "Time of entry: " << root->patient.time << RESET_TEXT << endl;
+    }
+
+    searchByCaseType(root->right, case_type);
+}
+
 // Function to display all patients in the hospital
 void display_all_patients(BSTNode *root)
 {
@@ -92,7 +115,7 @@ void display_all_patients(BSTNode *root)
     if (root->left)
         display_all_patients(root->left);
 
-    cout << GREEN
+    cout << YELLOW
          << "Patient ID: " << root->patient.P_id << " || "
          << "Name: " << root->patient.P_name << " || "
          << "Age: " << root->patient.P_age << " || "
@@ -170,7 +193,7 @@ void traverse_and_count(BSTNode *node, const string &department, bool &found)
     if (node->patient.department == department)
     {
         found = true; // Mark as found
-        cout << GREEN
+        cout << YELLOW
              << "Patient ID: " << node->patient.P_id << " || "
              << "Name: " << node->patient.P_name << " || "
              << "Age: " << node->patient.P_age << " || "
@@ -238,7 +261,7 @@ int get_valid_integer(const string &prompt)
 void normal_case(Details &d)
 {
     d.case_type = "Normal";
-    cout << GREEN << "Patient appointed as a normal case." << RESET_TEXT << endl;
+    cout << YELLOW << "Patient appointed as a normal case." << RESET_TEXT << endl;
 }
 
 // Function to handle emergency cases in any department
@@ -246,7 +269,7 @@ void emergency_case(Details &d)
 {
     d.case_type = "Emergency";
     int priority = get_valid_integer("Enter the priority of the patient (1-3): ");
-    cout << GREEN << "Patient assigned as an emergency case with priority: " << priority << RESET_TEXT << endl;
+    cout << YELLOW << "Patient assigned as an emergency case with priority: " << priority << RESET_TEXT << endl;
 }
 
 // Function to choose case type (Normal or Emergency)
@@ -276,18 +299,27 @@ int main()
     srand(time(0));       // Seed for random number generation
     char ch;
 
-    cout << BRIGHT_GREEN << "Welcome to Enhanced Hospital Management System" << RESET_TEXT << endl;
+    cout << RED << "                      |------------------------------------------------|\n";
+    cout << "                      |                                                |\n";
+    cout << "                      | Welcome to Enhanced Hospital Management System |\n";
+    cout << "                      |                                                |\n";
+    cout << "                      |------------------------------------------------|\n\n\n"
+         << RESET_TEXT;
 
     do
     {
         int option;
-        cout << BRIGHT_GREEN << "MENU OPTIONS:\n";
-        cout << "1. Register a New Patient\n";
+        cout << BRIGHT_GREEN << "MENU OPTIONS:\n"
+             << RESET_TEXT;
+        cout << BLUE << "1. Register a New Patient\n";
         cout << "2. Search a Patient by ID\n";
         cout << "3. View All Patients\n";
         cout << "4. View Patients by Department\n";
         cout << "5. Delete Patient from Hospital\n";
-        cout << "Choose an option (1-5): " << RESET_TEXT;
+        cout << "6.Display by cases like normal and emergency\n"
+             << RESET_TEXT;
+        cout << BRIGHT_GREEN << "Choose an option (1-5): " << RESET_TEXT;
+
         cin >> option;
 
         switch (option)
@@ -308,7 +340,7 @@ int main()
             d[number].time = ctime(&now); // Convert to string
 
             // Display the generated Patient ID
-            cout << GREEN << "Patient ID: " << d[number].P_id << " has been generated successfully!" << RESET_TEXT << endl;
+            cout << YELLOW << "Patient ID: " << RESET_TEXT << d[number].P_id << YELLOW << " has been generated successfully!" << RESET_TEXT << endl;
 
             // Department selection
             int department_choice = get_valid_integer("ENTER DEPARTMENT:\n1 FOR CARDIOLOGY\n2 FOR NEUROLOGY\n3 FOR ORTHOPEDICS\n4 FOR DERMATOLOGY\nENTER HERE: ");
@@ -347,7 +379,7 @@ int main()
 
             if (result != NULL)
             {
-                cout << GREEN << "Patient found! Details are as follows:\n";
+                cout << YELLOW << "Patient found! Details are as follows:\n";
                 cout << "Name: " << result->patient.P_name << "\n";
                 cout << "Age: " << result->patient.P_age << "\n";
                 cout << "Gender: " << result->patient.p_gender << "\n";
@@ -401,6 +433,26 @@ int main()
             int delete_id = get_valid_integer("Enter Patient ID to delete: ");
             root = deleteFromBST(root, delete_id);
             cout << GREEN << "Patient with ID " << delete_id << " has been deleted." << RESET_TEXT << endl;
+        }
+        break;
+
+        case 6:
+        {
+            int caseOption = get_valid_integer("ENTER 1 TO DISPLAY ALL NORMAL CASES\nENTER 2 TO DISPLAY ALL EMERGENCY CASES\n");
+            string caseType;
+
+            // Set case type based on user input
+            if (caseOption == 1)
+                caseType = "Normal";
+            else if (caseOption == 2)
+                caseType = "Emergency";
+            else
+            {
+                cout << RED << "Invalid option." << RESET_TEXT << endl;
+                break;
+            }
+
+            searchByCaseType(root, caseType);
         }
         break;
 
