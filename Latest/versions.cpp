@@ -104,6 +104,7 @@ void searchByCaseType(BSTNode *root, const string &case_type)
 }
 
 // Function to display all patients in the hospital
+//preoreder
 void display_all_patients(BSTNode *root)
 {
     if (root == NULL)
@@ -137,6 +138,7 @@ BSTNode *findMin(BSTNode *node)
 }
 
 // Function to delete a patient from the BST using their ID
+//preorder
 BSTNode *deleteFromBST(BSTNode *root, int P_id)
 {
     // Base case: if the tree is empty
@@ -182,6 +184,7 @@ BSTNode *deleteFromBST(BSTNode *root, int P_id)
 }
 
 // Function to traverse and count patients in a specific department
+// inorder
 void traverse_and_count(BSTNode *node, const string &department, bool &found)
 {
     if (node == NULL)
@@ -318,7 +321,7 @@ int main()
         cout << "5. Delete Patient from Hospital\n";
         cout << "6.Display by cases like normal and emergency\n"
              << RESET_TEXT;
-        cout << BRIGHT_GREEN << "Choose an option (1-5): " << RESET_TEXT;
+        cout << BRIGHT_GREEN << "Choose an option (1-6): " << RESET_TEXT;
 
         cin >> option;
 
